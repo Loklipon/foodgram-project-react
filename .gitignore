@@ -130,3 +130,13 @@ dmypy.json
 
 # .idea
 .idea
+
+media/
+node_modules/
+migrations/
+management/
+.vscode/
+package-lock.json
+static/
+templates/
+
