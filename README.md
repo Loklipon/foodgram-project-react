@@ -22,3 +22,38 @@
 ### _Документация к API_
 [foodgram.kravchun.ru/api/docs](foodgram.kravchun.ru/api/docs)
 
+### _Как запустить проект (Windows)*_ 
+* Клонировать репозиторий и перейти в него в командной строке:
+```
+git clone https://github.com/Loklipon/foodgram-project-react
+```
+```
+cd foodgram-project-react
+```
+* В настройках проекта (settings.py) раскомментируйте DATASBASE для локального запуска, и закомментируйте DATABASE для запуска на удаленном сервере
+* Создать и активировать виртуальное окружение:
+```
+python -m venv venv
+```
+```
+source venv/Script/activate
+```
+* Установить зависимости из файла requirements.txt:
+```
+pip install -r requirements.txt
+```
+* Перейти в папку foodgram-project-react, и выполнить миграции:
+```
+cd api_yamdb
+```
+```
+python manage.py makemigrations
+```
+```
+python manage.py migrate
+```
+* Запустить проект:
+```
+python3 manage.py runserver
+```
+*Проект будет доступен для API запросов по адресу 127.0.0.1:8000

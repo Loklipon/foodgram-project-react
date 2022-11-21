@@ -38,15 +38,10 @@ class FollowAndSubscriptionsSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context['request'].user
-        if user.is_anonymous:
-            return False
-        elif Follow.objects.filter(
-            user=user,
-            author=obj
-        ).exists():
-            return True
-        else:
-            return False
+        return (
+            not user.is_anonyous
+            and Follow.objects.filter(user=user, author=obj).exists()
+        )
 
     def get_recipes(self, obj):
         queryset = Recipe.objects.filter(author=obj)[:3]
@@ -138,33 +133,24 @@ class ShowRecipeSerializer(serializers.ModelSerializer):
 
     def get_is_favorited(self, obj):
         user = self.context['request'].user
-        if user.is_anonymous:
-            return False
-        elif Favorite.objects.filter(
-            user=user,
-            recipe=obj
-        ).exists():
-            return True
-        else:
-            return False
+        return (
+            not user.is_anonymous
+            and Favorite.objects.filter(user=user, recipe=obj).exists()
+        )
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context['request'].user
-        if user.is_anonymous:
-            return False
-        elif ShoppingCart.objects.filter(
-            user=user,
-            recipe=obj
-        ).exists():
-            return True
-        else:
-            return False
+        return (
+            not user.is_anonymous
+            and ShoppingCart.objects.filter(user=user, recipe=obj).exists()
+        )
 
 
 class Base64ImageField(serializers.ImageField):
     """
     Сериализатор для декодирования изображений.
     """
+
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('data:image'):
             format, imgstr = data.split(';base64,')

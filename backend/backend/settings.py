@@ -1,23 +1,12 @@
 import os
-from datetime import timedelta
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'wo1y76=lml)t+1_kpjf10$6gi!646(9@y!jewe%fj)54*b#se2'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'users.apps.UsersConfig',
@@ -71,19 +60,28 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+# Для локального запуска с использованием sqlite
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
+
+# Для запуска на удаленном сервере с использованием postgresql
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': os.getenv('DB_NAME', default='postgres'),
+        'USER': os.getenv('POSTGRES_USER', default=None),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default=None),
+        'HOST': os.getenv('DB_HOST', default=None),
+        'PORT': os.getenv('DB_PORT', default=None)
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -100,10 +98,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/2.2/topics/i18n/
-
 LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
@@ -113,10 +107,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 MEDIA_URL = '/media/'
 
@@ -154,15 +144,15 @@ DJOSER = {
     },
     'HIDE_USERS': False,
     'PERMISSIONS': {
-        'activation': ['api.permissions.AccessDenied'],
-        'password_reset': ['api.permissions.AccessDenied'],
-        'password_reset_confirm': ['api.permissions.AccessDenied'],
-        'username_reset': ['api.permissions.AccessDenied'],
-        'username_reset_confirm': ['api.permissions.AccessDenied'],
-        'set_username': ['api.permissions.AccessDenied'],
-        'user_create': ['api.permissions.AccessDenied'],
-        'user_delete': ['api.permissions.AccessDenied'],
-        'user': ['rest_framework.permissions.IsAuthenticated'],
+        'activation': ['api.permissions.IsAdminUser'],
+        'password_reset': ['api.permissions.IsAdminUser'],
+        'password_reset_confirm': ['api.permissions.IsAdminUser'],
+        'username_reset': ['api.permissions.IsAdminUser'],
+        'username_reset_confirm': ['api.permissions.IsAdminUser'],
+        'set_username': ['api.permissions.IsAdminUser'],
+        'user_create': ['api.permissions.IsAdminUser'],
+        'user_delete': ['api.permissions.IsAdminUser'],
+        'user': ['rest_framework.permissions.AllowAny'],
         'user_list': ['rest_framework.permissions.AllowAny'],
     }
 }

@@ -31,7 +31,7 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'тег'
         verbose_name_plural = 'Теги для рецептов'
-        ordering = ['id']
+        ordering = ('id',)
 
     def __str__(self):
         return self.name
@@ -53,7 +53,7 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'ингредиент'
         verbose_name_plural = 'Ингридиенты'
-        ordering = ['id']
+        ordering = ('id',)
 
     def __str__(self):
         return self.name
@@ -66,19 +66,24 @@ class Follow(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='subscription',
+        related_name='subscriptions',
         verbose_name='На кого подписан пользователь'
     )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='follower',
+        related_name='followers',
         verbose_name='Подписчик'
     )
 
     class Meta:
         verbose_name = 'подписку'
         verbose_name_plural = 'Подписки на авторов'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('author', 'user'), name='unique subscription'
+            )
+        ]
 
     def __str__(self):
         return f'{self.author}'
@@ -90,19 +95,19 @@ class Recipe(models.Model):
     """
     tags = models.ManyToManyField(
         Tag,
-        related_name='recipe',
+        related_name='recipes',
         verbose_name='Теги'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='recipe',
+        related_name='recipes',
         verbose_name='Автор рецепта'
     )
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientQuantity',
-        related_name='recipe',
+        related_name='recipes',
         verbose_name='Ингредиенты',
     )
     name = models.CharField(
@@ -129,7 +134,7 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = 'рецепт'
         verbose_name_plural = 'Рецепты авторов'
-        ordering = ['-id']
+        ordering = ('-id',)
 
     def __str__(self):
         return self.name
@@ -142,13 +147,13 @@ class IngredientQuantity(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name='quantity',
+        related_name='quantities',
         verbose_name='Ингредиент'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='ingredient',
+        related_name='ingredients_quantities',
         verbose_name='Рецепт'
     )
     amount = models.PositiveSmallIntegerField(
@@ -175,19 +180,24 @@ class Favorite(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='favorite',
+        related_name='favorites',
         verbose_name='Пользователь',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='favorite',
+        related_name='favorites',
         verbose_name='Рецепт',
     )
 
     class Meta:
         verbose_name = 'рецепт'
         verbose_name_plural = 'Избранные рецепты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe'), name='unique favorite'
+            )
+        ]
 
 
 class ShoppingCart(models.Model):
@@ -197,19 +207,24 @@ class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='shopping_cart',
+        related_name='shopping_carts',
         verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='shopping_cart',
+        related_name='shopping_carts',
         verbose_name='Рецепт'
     )
 
     class Meta:
         verbose_name = 'рецепт'
         verbose_name_plural = 'Списки покупок в виде рецептов'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe'), name='unique item'
+            )
+        ]
 
     def __str__(self):
         return f'{self.user}'

@@ -15,17 +15,7 @@ class IsAuthorOrIsAuthenticatedOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return obj.author == request.user
-
-
-class AccessDenied(permissions.BasePermission):
-    """
-    Класс разрешений для закрытия доступа
-    к неиспользуемым эндпоинтам приложения djoser.
-    """
-
-    def has_permission(self, request, view):
-        return False
-
-    def has_object_permission(self, request, view, obj):
-        return False
+        return (
+            obj.author == request.user
+            or request.user.is_superuser
+        )

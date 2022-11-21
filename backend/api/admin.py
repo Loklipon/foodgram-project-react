@@ -6,6 +6,7 @@ from django.contrib import admin
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'slug', 'color')
+    prepopulated_fields = {'slug': ('name',)}
 
 
 @admin.register(Ingredient)
@@ -32,7 +33,7 @@ class RecipeAdmin(admin.ModelAdmin):
         return False
 
     def add_to_favorite(self, obj):
-        return obj.favorite.count()
+        return obj.favorites.count()
 
     add_to_favorite.short_description = 'Добавлено в избранное'
 

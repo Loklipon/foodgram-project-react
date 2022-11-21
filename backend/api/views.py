@@ -36,7 +36,7 @@ class IngredientView(viewsets.ReadOnlyModelViewSet):
     """
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (DjangoFilterBackend,)
     filter_class = IngredientFilter
     pagination_class = None
 
@@ -47,11 +47,11 @@ class SubscriptionsView(ListAPIView):
     для авторизованных пользователей.
     """
     serializer_class = FollowAndSubscriptionsSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return User.objects.filter(
-            subscription__user=self.request.user
+            subscriptions__user=self.request.user
         )
 
 
@@ -60,7 +60,7 @@ class FollowAPIView(APIView):
     Вью-класс для создания и удаленя подписок;
     для авторизованных пользователей.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, id):
         subscribe = get_object_or_404(User, id=id)
@@ -69,12 +69,12 @@ class FollowAPIView(APIView):
             user=request.user
         ).exists():
             return Response(
-                {'errors': 'Subscription already exists'},
+                {'errors': 'Такая подписка уже существует'},
                 status=HTTPStatus.BAD_REQUEST
             )
         if request.user.id == id:
             return Response(
-                {'errors': 'Self-subscription'},
+                {'errors': 'Нельзя подписаться на себя'},
                 status=HTTPStatus.BAD_REQUEST
             )
         Follow.objects.create(
@@ -93,7 +93,7 @@ class FollowAPIView(APIView):
             user=request.user
         ).exists():
             return Response(
-                {'errors': 'Subscription does not exists'},
+                {'errors': 'Такой подписки не существует'},
                 status=HTTPStatus.BAD_REQUEST
             )
         Follow.objects.get(
@@ -113,9 +113,9 @@ class RecipeView(viewsets.ModelViewSet):
     с разными правами доступа.
     """
     queryset = Recipe.objects.all()
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (DjangoFilterBackend,)
     filter_class = RecipeFilter
-    permission_classes = [IsAuthorOrIsAuthenticatedOrReadOnly]
+    permission_classes = (IsAuthorOrIsAuthenticatedOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
@@ -128,7 +128,7 @@ class FavoriteAPIView(APIView):
     Вью-класс для создания и удаления подписок;
     для авторизованных пользователей.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, id):
         user = request.user
@@ -175,7 +175,7 @@ class ShoppingCartAPIView(APIView):
     Вью-класс для измнения списка покупок (добавление, удаление);
     для авторизованных пользователей.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, id):
         user = request.user
@@ -222,11 +222,11 @@ class DownloadShoppingCartAPIView(APIView):
     Вью-класс для формирования и скачивания списка покупок;
     для авторизованных пользователей.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         grocery_list = IngredientQuantity.objects.filter(
-            recipe__shopping_cart__user=request.user
+            recipe__shopping_carts__user=request.user
         ).values_list(
             'ingredient__name',
             'ingredient__measurement_unit',
