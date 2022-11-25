@@ -1,8 +1,6 @@
 from http import HTTPStatus
 
 from api.filters import IngredientFilter, RecipeFilter
-from api.models import (Favorite, Follow, Ingredient, IngredientQuantity,
-                        Recipe, ShoppingCart, Tag, User)
 from api.permissions import IsAuthorOrIsAuthenticatedOrReadOnly
 from api.serializers import (CreateUpdateRecipeSerializer,
                              FollowAndSubscriptionsSerializer,
@@ -10,6 +8,8 @@ from api.serializers import (CreateUpdateRecipeSerializer,
                              ShowShortRecipeSerializer, TagSerializer)
 from django.shortcuts import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
+from recipes.models import (Favorite, Ingredient, IngredientQuantity, Recipe,
+                            ShoppingCart, Tag)
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
@@ -18,6 +18,7 @@ from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from users.models import Follow, User
 
 
 class TagView(viewsets.ReadOnlyModelViewSet):
@@ -39,70 +40,6 @@ class IngredientView(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filter_class = IngredientFilter
     pagination_class = None
-
-
-class SubscriptionsView(ListAPIView):
-    """
-    Вью-класс для отображения подписок;
-    для авторизованных пользователей.
-    """
-    serializer_class = FollowAndSubscriptionsSerializer
-    permission_classes = (IsAuthenticated,)
-
-    def get_queryset(self):
-        return User.objects.filter(
-            subscriptions__user=self.request.user
-        )
-
-
-class FollowAPIView(APIView):
-    """
-    Вью-класс для создания и удаленя подписок;
-    для авторизованных пользователей.
-    """
-    permission_classes = (IsAuthenticated,)
-
-    def post(self, request, id):
-        subscribe = get_object_or_404(User, id=id)
-        if Follow.objects.filter(
-            author=id,
-            user=request.user
-        ).exists():
-            return Response(
-                {'errors': 'Такая подписка уже существует'},
-                status=HTTPStatus.BAD_REQUEST
-            )
-        if request.user.id == id:
-            return Response(
-                {'errors': 'Нельзя подписаться на себя'},
-                status=HTTPStatus.BAD_REQUEST
-            )
-        Follow.objects.create(
-            user=request.user,
-            author_id=id
-        )
-        return Response(
-            FollowAndSubscriptionsSerializer(subscribe).data,
-            status=HTTPStatus.CREATED
-        )
-
-    def delete(self, request, id):
-        get_object_or_404(User, id=id)
-        if not Follow.objects.filter(
-            author=id,
-            user=request.user
-        ).exists():
-            return Response(
-                {'errors': 'Такой подписки не существует'},
-                status=HTTPStatus.BAD_REQUEST
-            )
-        Follow.objects.get(
-            author=id,
-            user=request.user
-        ).delete()
-        return Response(
-            status=HTTPStatus.NO_CONTENT
-        )
 
 
 class RecipeView(viewsets.ModelViewSet):
@@ -242,7 +179,7 @@ class DownloadShoppingCartAPIView(APIView):
                 }
             else:
                 final_grocery_list[name]['amount'] += item[2]
-        pdfmetrics.registerFont(TTFont('Arial', '../data/arial.ttf', 'UTF-8'))
+        pdfmetrics.registerFont(TTFont('Arial', 'data/arial.ttf', 'UTF-8'))
         response = HttpResponse(content_type='application/pdf')
         response[
             'Content-Disposition'] = 'attachment; filename="shopping_list.pdf"'
@@ -260,3 +197,67 @@ class DownloadShoppingCartAPIView(APIView):
         page.showPage()
         page.save()
         return response
+
+
+class SubscriptionsView(ListAPIView):
+    """
+    Вью-класс для отображения подписок;
+    для авторизованных пользователей.
+    """
+    serializer_class = FollowAndSubscriptionsSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return User.objects.filter(
+            subscriptions__user=self.request.user
+        )
+
+
+class FollowAPIView(APIView):
+    """
+    Вью-класс для создания и удаленя подписок;
+    для авторизованных пользователей.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, id):
+        author = get_object_or_404(User, id=id)
+        if Follow.objects.filter(
+            author=id,
+            user=request.user
+        ).exists():
+            return Response(
+                {'errors': 'Такая подписка уже существует'},
+                status=HTTPStatus.BAD_REQUEST
+            )
+        if request.user == author:
+            return Response(
+                {'errors': 'Нельзя подписаться на себя'},
+                status=HTTPStatus.BAD_REQUEST
+            )
+        Follow.objects.create(
+            user=request.user,
+            author_id=id
+        )
+        return Response(
+            FollowAndSubscriptionsSerializer(author, context={'request': request}).data,
+            status=HTTPStatus.CREATED
+        )
+
+    def delete(self, request, id):
+        get_object_or_404(User, id=id)
+        if not Follow.objects.filter(
+            author=id,
+            user=request.user
+        ).exists():
+            return Response(
+                {'errors': 'Такой подписки не существует'},
+                status=HTTPStatus.BAD_REQUEST
+            )
+        Follow.objects.get(
+            author=id,
+            user=request.user
+        ).delete()
+        return Response(
+            status=HTTPStatus.NO_CONTENT
+        )

@@ -1,5 +1,9 @@
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'wo1y76=lml)t+1_kpjf10$6gi!646(9@y!jewe%fj)54*b#se2'
@@ -9,8 +13,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
-    'users.apps.UsersConfig',
     'api.apps.ApiConfig',
+    'recipes.apps.RecipesConfig',
+    'users.apps.UsersConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -23,7 +28,7 @@ INSTALLED_APPS = [
     'django_filters',
     'djoser',
     'colorfield',
-    'reportlab'
+    'reportlab',
 ]
 
 MIDDLEWARE = [
@@ -39,7 +44,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'backend.urls'
 
-TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
 TEMPLATES = [
     {
@@ -75,13 +80,14 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
-        'NAME': os.getenv('DB_NAME', default='postgres'),
+        'NAME': os.getenv('POSTGRES_DB', default='postgres'),
         'USER': os.getenv('POSTGRES_USER', default=None),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default=None),
         'HOST': os.getenv('DB_HOST', default=None),
         'PORT': os.getenv('DB_PORT', default=None)
     }
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -112,9 +118,11 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-STATIC_URL = '/static/'
+STATIC_URL = '/backend-static/'
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
+# STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'backend-static')
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -138,9 +146,9 @@ REST_FRAMEWORK = {
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'SERIALIZERS': {
-        'user': 'users.serializers.ShowUserSerializer',
-        'user_create': 'users.serializers.CreateUserSerializer',
-        'current_user': 'users.serializers.ShowUserSerializer',
+        'user': 'api.serializers.ShowUserSerializer',
+        'user_create': 'api.serializers.CreateUserSerializer',
+        'current_user': 'api.serializers.ShowUserSerializer',
     },
     'HIDE_USERS': False,
     'PERMISSIONS': {
@@ -157,8 +165,10 @@ DJOSER = {
     }
 }
 
-CORS_ALLOWED_ORIGINS = [
-    '127.0.0.1:3000',
-]
+# CORS_ALLOWED_ORIGINS = [
+#     'frontend:3000',
+# ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_URLS_REGEX = r'^/api/.*$'

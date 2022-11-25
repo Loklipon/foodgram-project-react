@@ -1,6 +1,6 @@
-from api.models import (Favorite, Follow, Ingredient, IngredientQuantity,
-                        Recipe, ShoppingCart, Tag)
 from django.contrib import admin
+from recipes.models import (Favorite, Ingredient, IngredientQuantity, Recipe,
+                            ShoppingCart, Tag)
 
 
 @admin.register(Tag)
@@ -13,14 +13,6 @@ class TagAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('name', 'measurement_unit')
     search_fields = ('name',)
-
-
-@admin.register(Follow)
-class FollowAdmin(admin.ModelAdmin):
-    list_display = ('id', 'author', 'user')
-
-    def has_add_permission(self, request, obj=None):
-        return False
 
 
 @admin.register(Recipe)

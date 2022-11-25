@@ -59,36 +59,6 @@ class Ingredient(models.Model):
         return self.name
 
 
-class Follow(models.Model):
-    """
-    Подписки на авторов рецептов.
-    """
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='subscriptions',
-        verbose_name='На кого подписан пользователь'
-    )
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='followers',
-        verbose_name='Подписчик'
-    )
-
-    class Meta:
-        verbose_name = 'подписку'
-        verbose_name_plural = 'Подписки на авторов'
-        constraints = [
-            models.UniqueConstraint(
-                fields=('author', 'user'), name='unique subscription'
-            )
-        ]
-
-    def __str__(self):
-        return f'{self.author}'
-
-
 class Recipe(models.Model):
     """
     Рецепты.
