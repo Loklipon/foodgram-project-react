@@ -16,10 +16,10 @@
 Это платформа для создания и публикации своих кулинарных рецептов с возможностью подписываться на других авторов, добавления их рецептов к себе в избранное, а также формирования удобного списка продуктов по избранным рецептам.
 
 ### _Сайт_
-[foodgram.kravchun.ru](foodgram.kravchun.ru)
+[http://foodgram.kravchun.ru/](http://foodgram.kravchun.ru/)
 
 ### _Документация к API_
-[foodgram.kravchun.ru/api/docs](foodgram.kravchun.ru/api/docs)
+[http://foodgram.kravchun.ru/api/docs/](http://foodgram.kravchun.ru/api/docs/)
 
 ### _Как запустить проект (Windows)*_ 
 * Клонировать репозиторий и перейти в него в командной строке:
