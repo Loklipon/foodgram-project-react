@@ -52,7 +52,7 @@ class Ingredient(models.Model):
 
     class Meta:
         verbose_name = 'ингредиент'
-        verbose_name_plural = 'Ингридиенты'
+        verbose_name_plural = 'Ингредиенты'
         ordering = ('id',)
 
     def __str__(self):

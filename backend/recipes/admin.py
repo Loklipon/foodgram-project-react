@@ -19,7 +19,8 @@ class IngredientAdmin(admin.ModelAdmin):
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('author', 'name', 'add_to_favorite')
     list_filter = ('tags',)
-    search_fields = ('author', 'name')
+    search_fields = ('author__username', 'name')
+    raw_id_fields = ('author',)
 
     def has_add_permission(self, request, obj=None):
         return False
