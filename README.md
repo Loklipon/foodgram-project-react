@@ -1,5 +1,4 @@
 # Foodgram - Продуктовый помощник
-![example workflow](https://github.com/Loklipon/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)  
 
 ### _Стек технологий_
 [![Python](https://img.shields.io/badge/-Python-464646?style=flat-square&logo=Python)](https://www.python.org/)
