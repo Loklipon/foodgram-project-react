@@ -152,22 +152,17 @@ DJOSER = {
     },
     'HIDE_USERS': False,
     'PERMISSIONS': {
-        'activation': ['api.permissions.IsAdminUser'],
-        'password_reset': ['api.permissions.IsAdminUser'],
-        'password_reset_confirm': ['api.permissions.IsAdminUser'],
-        'username_reset': ['api.permissions.IsAdminUser'],
-        'username_reset_confirm': ['api.permissions.IsAdminUser'],
-        'set_username': ['api.permissions.IsAdminUser'],
-        'user_create': ['api.permissions.IsAdminUser'],
-        'user_delete': ['api.permissions.IsAdminUser'],
+        'activation': ['rest_framework.permissions.IsAdminUser'],
+        'password_reset': ['rest_framework.permissions.IsAdminUser'],
+        'password_reset_confirm': ['rest_framework.permissions.IsAdminUser'],
+        'username_reset': ['rest_framework.permissions.IsAdminUser'],
+        'username_reset_confirm': ['rest_framework.permissions.IsAdminUser'],
+        'set_username': ['rest_framework.permissions.IsAdminUser'],
+        'user_delete': ['rest_framework.permissions.IsAdminUser'],
         'user': ['rest_framework.permissions.AllowAny'],
         'user_list': ['rest_framework.permissions.AllowAny'],
     }
 }
-
-# CORS_ALLOWED_ORIGINS = [
-#     'frontend:3000',
-# ]
 
 CORS_ORIGIN_ALLOW_ALL = True
 
